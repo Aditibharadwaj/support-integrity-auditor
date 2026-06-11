@@ -1,3 +1,4 @@
+# Core
 numpy
 pandas
 scikit-learn
@@ -6,30 +7,42 @@ seaborn
 jupyter
 notebook
 
+# Deep Learning
 torch
 transformers
 datasets
 accelerate
 sentence-transformers
+sentencepiece
+protobuf
 
+# LoRA / Fine-tuning
 peft
 trl
 bitsandbytes
 
+# Evaluation
 evaluate
 imbalanced-learn
 
+# NLP
 nltk
 spacy
 
+# Visualization
 streamlit
 
+# Utils
 tqdm
 python-dotenv
+joblib
 
+# ML
 xgboost
 lightgbm
 
+# Explainability
 shap
 
+# Notebook
 ipywidgets
