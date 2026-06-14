@@ -69,3 +69,10 @@ shap
 
 # Notebook
 ipywidgets
+
+streamlit
+pandas
+torch
+transformers
+scikit-learn
+huggingface_hub
