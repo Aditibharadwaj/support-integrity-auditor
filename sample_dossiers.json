@@ -1,0 +1,1552 @@
+[
+    {
+        "ticket_id": "TKT-117353",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Pricing tiers - Else"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "67"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not specify an immediate issue or problem that requires urgent attention.\n2. The inferred severity is 2 because the ticket contains a question about pricing tiers, which could potentially impact the business financially if not addressed promptly.\n3. The ticket is classified as Hidden Crisis because the question about pricing tiers might indicate a potential misunderstanding or misinterpretation of the company's pricing structure, which could lead to financial losses if not addressed and clarified.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-107423",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Feature request - And"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "75"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket is a feature request, which typically has lower urgency compared to technical issues or support requests.\n2. The inferred severity is 2 because the ticket contains two unrelated questions, indicating confusion or lack of clarity, which can lead to inefficiency in addressing the request.\n3. The ticket is classified as Hidden Crisis because the user's questions, though seemingly unrelated, may indicate a deeper issue such as lack of understanding of the product or service, which can lead to dissatisfaction and potential loss of",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-118644",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Invoice discrepancy - Spring"
+            },
+            {
+                "signal": "keyword",
+                "value": "invoice discrepancy"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "68"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not mention an immediate impact on the user's work or critical business operations.\n2. The inferred severity is 2 because the user mentions an invoice discrepancy, which can potentially lead to financial issues if not resolved promptly.\n3. The ticket is classified as Hidden Crisis because the user's casual tone and mention of a career (laugh career) may indicate frustration or dissatisfaction, which could potentially harm the company's reputation if not addressed properly.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-104980",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Feature request - Base"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "54"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because it seems the user is asking about a feature, not a critical issue that requires immediate attention.\n2. The inferred severity is supported by the user's request for information about the team pricing tier, which could indicate a potential financial concern or business-critical decision.\n3. The ticket is classified as Hidden Crisis because the user's request for team pricing information might indicate a potential financial issue that, if not addressed promptly, could lead to negative consequences for the user's business.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-106570",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Product question - Happen"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "32"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the question about the company's headquarters location is not critical for immediate resolution, but it is still important for the customer to have an answer.\n2. The inferred severity is supported by the use of the word \"else\" and \"thought,\" which suggests that the customer might be experiencing confusion or frustration due to a lack of clear information about the company's location.\n3. The ticket is classified as Hidden Crisis because the customer's confusion or frustration, although not immediately apparent, could potentially",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-117326",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Pricing tiers - Even"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "63"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the ticket description does not specify an immediate issue or problem that requires immediate attention.\n2. The inferred severity is supported by the use of the word \"Democrat,\" which could indicate a potential political or ideological bias, suggesting a sensitive and potentially escalating issue.\n3. The ticket is classified as Hidden Crisis because the use of the word \"Democrat\" in a support ticket is unusual and could indicate a misunderstanding or misuse of the support system, which could lead to escalating",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-116124",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Invoice discrepancy - Use"
+            },
+            {
+                "signal": "keyword",
+                "value": "invoice discrepancy"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "46"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not mention an immediate impact on the user's ability to perform their job or critical services.\n2. The inferred severity is 2 because the user has noticed a double charge on their statement, which could potentially lead to financial loss if not addressed promptly.\n3. The ticket is classified as Hidden Crisis because the user may not be aware of the full extent of the issue, such as potential recurring charges or additional fees, making it a potential financial risk if not addressed quickly.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-105050",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Hours of operation - Open"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "36"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the user is asking for regular business hours, which are usually not considered urgent.\n2. The inferred severity is supported by the use of the word \"Statement\" in the ticket description, indicating a clear expectation for a specific answer.\n3. The ticket is classified as Hidden Crisis because the user's question about hours of operation could potentially lead to miscommunication or confusion if not addressed promptly, causing potential service disruptions.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-116227",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Password reset - Time"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "2"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "120"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the user mentions losing their phone, but they do not indicate an immediate need for access to their account, such as a deadline or critical business operation.\n2. The inferred severity is 2 because the user mentions a big animal lot, which could suggest a large number of people or things, indicating a potentially complex or time-consuming issue.\n3. The ticket is classified as Hidden Crisis because the user's inability to pass the 2FA check could potentially lead to unauthorized access to their account,",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-106875",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Payment failed - Others"
+            },
+            {
+                "signal": "keyword",
+                "value": "payment failed,failed"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "61"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not mention an immediate need for resolution, but the customer's concern about an unexpected increase in their bill may require a thorough investigation.\n2. The inferred severity is 2 because the customer mentions a payment failure, which can cause financial hardship if not addressed promptly.\n3. The ticket is classified as Hidden Crisis because the customer's concern about an unexpected bill increase may not be immediately apparent, but if left unresolved, it could lead to dissatisfaction, negative reviews, and potential loss",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-118639",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Feature request - Training"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "12"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority might not reflect the ticket urgency because the user is asking about a feature request, which is typically considered low priority compared to troubleshooting or resolving technical issues.\n2. The inferred severity is supported by the user's request for information about the team pricing tier, which suggests they may be considering a purchase or upgrade, indicating a potential financial impact.\n3. The ticket is classified as Hidden Crisis because the user's question about the team pricing tier could indicate a potential loss of business if the user decides to go with a",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-113988",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Demo request - Carry"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "41"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the request for a discount is not typically considered urgent, but the mention of a non-profit organization and the availability of a product (Cover science friend war) might indicate a time-sensitive need.\n2. The inferred severity is supported by the mention of a non-profit organization, which often have limited resources and may require discounts to operate effectively.\n3. The ticket is classified as Hidden Crisis because the non-profit organization's need for a discount might indicate a potential financial strain",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-104917",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Charged twice - Light"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "73"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not mention any immediate service disruption or critical system failure, but the customer's bill being higher than agreed could still cause financial distress.\n2. The inferred severity is 2 because the customer's bill being higher than agreed indicates a potential financial issue for the customer.\n3. The ticket is classified as Hidden Crisis because the customer's financial situation might be at risk due to the unexpected bill increase, even though the issue seems minor on the surface.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-115994",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Hours of operation - Executive"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "8"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the request is for a demo, which is typically not considered an urgent matter.\n2. The inferred severity is supported by the use of the word \"tonight\" in the ticket description, indicating a need for a quick response.\n3. The ticket is classified as Hidden Crisis because the request for a demo may be crucial for the team's productivity and success, but the urgency is not immediately apparent, making it a hidden crisis.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-110443",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Feature request - What"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "12"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not specify an immediate need for resolution, but the inquiry about support operating hours suggests a potential issue with scheduling or time management.\n2. The inferred severity is 2 because the ticket does not indicate a critical problem, but it does require a response to provide the necessary information.\n3. The ticket is classified as Hidden Crisis because the lack of clear urgency in the ticket description may lead to unforeseen issues if the support hours are not communicated promptly, potentially causing delays in resolving",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-100419",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Suspicious charge - Professor"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "50"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the user is experiencing a payment issue, which could potentially prevent them from accessing necessary services.\n2. The inferred severity is supported by the user's statement about the payment method failing, indicating potential financial loss or service disruption.\n3. The ticket is classified as Hidden Crisis because the user's statement suggests a potential financial issue that may not be immediately apparent but could have significant consequences if not addressed promptly.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-100933",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Update credit card - Wide"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "9"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the customer mentions a double charge, but does not specify an immediate need for resolution or any financial loss.\n2. The inferred severity is 2 because the customer mentions a double charge, which could potentially lead to financial issues if not resolved promptly.\n3. The ticket is classified as Hidden Crisis because the customer's statement shows a double charge, which may indicate a billing error or fraudulent activity, requiring thorough investigation.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-103080",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Feature request - Success"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "6"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not indicate an immediate issue that requires urgent attention.\n2. The inferred severity is 2 because the customer is asking about a discount, which suggests they are considering a purchase.\n3. The ticket is classified as Hidden Crisis because the customer is a non-profit organization, and they may be in need of financial assistance, but this is not explicitly stated in the ticket.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-111803",
+        "assigned_priority": "Low",
+        "inferred_severity": 3,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 3,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Subscription upgrade - Certain"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "3"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "19"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the request is for a subscription upgrade, not a critical issue. However, the customer's intention to delete their account and data indicates potential loss of business, which requires prompt attention.\n2. The inferred severity is 3 because the customer's request to delete their account and data suggests a high level of dissatisfaction, which could lead to negative word-of-mouth and potential loss of business.\n3. The ticket is classified as Hidden Crisis because the customer's intention to delete their account and data indicates a",
+        "confidence": 0.95
+    },
+    {
+        "ticket_id": "TKT-100955",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Pricing tiers - It"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "37"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the request for a demo is typically not considered urgent, but the mention of \"Traditional move bank wide\" suggests a larger scale implementation that might require more attention.\n2. The inferred severity is supported by the mention of \"Traditional move bank wide\", indicating a potentially significant impact on the organization if the demo is not provided in a timely manner.\n3. The ticket is classified as Hidden Crisis because the potential impact of a large-scale implementation not being properly demonstrated could lead to operational",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-113763",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Invoice discrepancy - Anyone"
+            },
+            {
+                "signal": "keyword",
+                "value": "invoice discrepancy"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "44"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because it seems the issue is related to updating a payment method, which is not critical for immediate service delivery. However, the customer's inability to update their payment method could potentially lead to service interruptions in the future.\n\n2. The evidence supporting the inferred severity is the mention of an \"invoice discrepancy,\" which suggests there might be a financial issue that needs attention.\n\n3. The ticket is classified as Hidden Crisis because the customer's inability to update their payment method could potentially lead to",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-112175",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Feature request - Difference"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "120"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not specify an immediate need for assistance, but the inferred severity suggests that the user may require clarification on the pricing tiers to make an informed decision, which could impact their business operations.\n2. The inferred severity is supported by the use of the word \"team\" in the ticket description, indicating a potential need for multiple licenses, and the mention of \"Spring,\" which could imply a critical business application.\n3. The ticket is classified as Hidden Crisis because the user's confusion about the pricing",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-110759",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Charged twice - Work"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "62"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the customer is requesting a refund, which typically requires a thorough investigation and coordination with the billing department, taking more time than usual.\n2. The inferred severity is supported by the customer's statement \"System loss sound fill,\" which suggests frustration and dissatisfaction with the service.\n3. The ticket is classified as Hidden Crisis because the customer's repeated request for a refund, combined with their growing frustration, may lead to negative reviews or even churn, damaging the company'",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-108773",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Invoice discrepancy - Music"
+            },
+            {
+                "signal": "keyword",
+                "value": "invoice discrepancy"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "4"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "10"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because it appears to be a payment issue, which can often be resolved by the user themselves. However, the user's inability to update their payment method suggests a potential account lockout or a more serious underlying issue.\n2. The evidence supporting the inferred severity is the mention of an invoice discrepancy, which could indicate a financial problem that needs immediate attention.\n3. The ticket is classified as Hidden Crisis because the user's inability to update their payment method could lead to account lockout or service disruption",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-100031",
+        "assigned_priority": "Low",
+        "inferred_severity": 2,
+        "mismatch_type": "Hidden Crisis",
+        "severity_delta": 2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Pricing tiers - Collection"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "5"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "36"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority is low because the ticket does not specify an immediate issue that requires urgent attention.\n2. The inferred severity is 2 because the ticket is about understanding a business process, which can impact the efficiency of the team if not properly understood.\n3. The ticket is classified as Hidden Crisis because the lack of understanding of the pricing tiers could potentially lead to incorrect billing or resource allocation, which could have significant long-term consequences.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-102866",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "App crashing - All"
+            },
+            {
+                "signal": "keyword",
+                "value": "crash,sync"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "10"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a sync problem, which might not be critical for the immediate operation of the app.\n2. The inferred severity is supported by the evidence of the app crashing, which suggests a significant problem that needs attention.\n3. The ticket is classified as False Alarm because the issue seems to be related to a sync problem, which might not be a critical issue, and the user mentions researching the problem on social media, indicating they are aware of the issue and are not",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-111245",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "App crashing - City"
+            },
+            {
+                "signal": "keyword",
+                "value": "crash,sync"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "19"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to the app crashing, which could be due to a temporary glitch or software bug, rather than a critical data loss or system failure.\n2. The inferred severity is supported by the evidence of the app crashing, as this issue can potentially disrupt the user's workflow and productivity.\n3. The ticket is classified as False Alarm because the user's description suggests that the app is crashing, but there is no mention of actual data loss or a critical",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-117686",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - Open"
+            },
+            {
+                "signal": "keyword",
+                "value": "error"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "2"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "1"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "36"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the 500 Internal Server Error is a common issue that can be caused by various factors, some of which might be easily resolved.\n2. The inferred severity is supported by the keyword \"error,\" which indicates a problem with the system's functionality.\n3. The ticket is classified as False Alarm because the issue is related to a specific API endpoint, suggesting it might be an isolated problem rather than a system-wide outage.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-106516",
+        "assigned_priority": "Critical",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -3,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - Language"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "37"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to the language settings rather than a critical system failure, which typically requires immediate attention.\n2. The inferred severity is supported by the keyword \"nan\", which often indicates missing or incorrect data, suggesting a minor issue rather than a system-wide problem.\n3. The ticket is classified as False Alarm because the issue appears to be related to a language setting, which is not a critical system failure and does not prevent the system from functioning properly.",
+        "confidence": 0.95
+    },
+    {
+        "ticket_id": "TKT-119620",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Unrecognized login - New"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "9"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the description suggests a false alarm, not a security breach or account compromise.\n2. The inferred severity is supported by the lack of specific details about the issue, such as unauthorized access or data loss, which are usually present in high-severity tickets.\n3. The ticket is classified as False Alarm because the description indicates a new device added to the trusted list, which is typically an automated process and not a security concern.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-117188",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Alert notification - Issue"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "3"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the user is not concerned about the new device addition, but rather wants an interview letter.\n2. The inferred severity is supported by the user's request for an interview letter, indicating a low level of concern about the device addition.\n3. The ticket is classified as False Alarm because the issue is not related to the device being added to the trusted list, but rather the user's request for an interview letter.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-100779",
+        "assigned_priority": "High",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - Step"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "14"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a single user's data sync, which might not affect the overall system functionality.\n2. The evidence supporting the inferred severity is the absence of any critical keywords such as \"system down\", \"emergency\", or \"critical error\".\n3. The ticket is classified as False Alarm because the issue appears to be a simple data sync problem, which can often be resolved quickly without significant impact on the user's work.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-116923",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Data not syncing - Type"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync,data not syncing"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "37"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a data sync problem, which can often be resolved by restarting the application or checking network connections, rather than a critical system failure.\n2. The inferred severity is supported by the keyword \"critical\" in the ticket subject, but the description suggests a more common issue that might not require immediate attention.\n3. The ticket is classified as False Alarm because the data sync issue is not causing any significant impact on the system's functionality, and it can likely be resolved",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-106182",
+        "assigned_priority": "High",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - Old"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "73"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a sync problem, which might be due to network or software glitches, not an immediate system failure.\n2. The inferred severity is supported by the absence of any mention of critical data loss or system downtime, as the user only mentions a 24-hour delay in data sync.\n3. The ticket is classified as False Alarm because the user's issue does not seem to be a critical problem that requires immediate attention, but rather a technical hic",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-107255",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Data not syncing - Age"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync,data not syncing"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "10"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a dashboard loading problem, which might not directly impact the functionality of the system.\n2. The inferred severity is supported by the keyword \"Critical\" assigned to the ticket, but the description suggests a minor issue with the dashboard loading, which typically has a lower severity.\n3. The ticket is classified as False Alarm because the issue described (data not syncing) does not seem to be accurate, as the dashboard is not loading at all,",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-100335",
+        "assigned_priority": "High",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - Street"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "45"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a sync problem, which might be due to network or software glitches, not an immediate system failure.\n2. The inferred severity is supported by the keyword \"sync\" as it suggests a technical problem, but the lack of specific details about the impact on the user's work or system indicates a lower severity.\n3. The ticket is classified as False Alarm because the issue described does not seem to be critical or urgent, and the user's statement \"Writer",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-116159",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Suspicious activity - Challenge"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "8"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the user is unsure about the new device and is seeking clarification, not reporting an immediate security threat.\n2. The inferred severity is supported by the user's statement \"Different hear where stay,\" indicating confusion or concern about the new device.\n3. The ticket is classified as False Alarm because the user's concern is based on uncertainty, not a confirmed security breach or unauthorized access.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-109801",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Screen freezes - List"
+            },
+            {
+                "signal": "keyword",
+                "value": "screen freezes"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "2"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "1"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue described (screen freezes) is not directly related to the patch installation on Windows 11.\n2. The inferred severity is supported by the mention of screen freezes, which can significantly impact the user's productivity and experience.\n3. The ticket is classified as False Alarm because the issue described (screen freezes) is not related to the patch installation on Windows 11, but could be due to other factors such as hardware or software conflicts.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-118337",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Screen freezes - Gun"
+            },
+            {
+                "signal": "keyword",
+                "value": "screen freezes"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "2"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "8"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue described (screen freezes) is not related to the patch installation on Windows 11.\n2. The inferred severity is supported by the mention of a screen freeze, which can significantly impact the user's ability to work.\n3. The ticket is classified as False Alarm because the issue described (screen freeze) is not related to the requested action (installing the latest patch on Windows 11).",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-116459",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Login failed - Power"
+            },
+            {
+                "signal": "keyword",
+                "value": "failed"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "0"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "2"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "12"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to installing a patch, which is not typically an immediate system-threatening problem.\n2. The inferred severity is supported by the keyword \"failed\", which suggests a problem occurred but does not necessarily indicate a high severity issue.\n3. The ticket is classified as False Alarm because the problem described appears to be related to installing a patch, not a login failure as stated in the subject line.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-110014",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "App crashing - Choose"
+            },
+            {
+                "signal": "keyword",
+                "value": "crash"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "2"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "7"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to the app crashing, which can be resolved by updating the app or checking for compatibility issues, rather than a critical system failure.\n2. The inferred severity is supported by the keyword \"crash,\" which typically indicates a problem that requires immediate attention but is not necessarily critical.\n3. The ticket is classified as False Alarm because the description mentions a spinning wheel, which is a common loading symbol, suggesting that the app might be trying to load data but is not actually",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-108204",
+        "assigned_priority": "High",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - The"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "1"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a technical glitch rather than a critical system failure.\n2. The inferred severity is supported by the keyword \"nan\" which often indicates missing or incorrect data, suggesting a technical issue rather than a severe problem.\n3. The ticket is classified as False Alarm because the dashboard is not loading any data, but there's no indication of a system crash or critical error that would affect the overall functionality of the system.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-116392",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Data not syncing - Professional"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync,data not syncing"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "16"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to data synchronization, which is not typically a critical problem in real-time operations.\n2. The inferred severity is supported by the evidence of \"data not syncing,\" as this issue can potentially disrupt the user's workflow and productivity.\n3. The ticket is classified as False Alarm because the issue is related to a trial program, which may have limited functionality or data availability compared to the full version of the software.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-110462",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Installation issue - These"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "27"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a specific account, not a system-wide problem.\n2. The inferred severity is supported by the lack of keywords indicating a system-wide problem or a high impact on the business.\n3. The ticket is classified as False Alarm because the user mentions they cannot log in after resetting the password, which is usually a common issue that can often be resolved by the user themselves.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-102924",
+        "assigned_priority": "Critical",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -3,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Login failed - People"
+            },
+            {
+                "signal": "keyword",
+                "value": "failed"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "1"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a specific user's login problem, which might not affect the overall system functionality.\n2. The inferred severity is supported by the keyword \"failed\", indicating a potential problem with the login process.\n3. The ticket is classified as False Alarm because the user mentions that they can successfully log in during the evening, suggesting that the issue might be temporary or user-specific.",
+        "confidence": 0.95
+    },
+    {
+        "ticket_id": "TKT-104233",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Alert notification - Study"
+            },
+            {
+                "signal": "keyword",
+                "value": "No keyword evidence"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "3"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "10"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the user is concerned about an unexpected device addition, but the system is not experiencing any critical issues or security breaches.\n2. The inferred severity is supported by the user's concern about an unauthorized device addition, which could potentially compromise system security.\n3. The ticket is classified as a False Alarm because the user mistakenly believes a new device was added to their trusted list, but it was likely a system update or configuration change that caused the appearance of a new device.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-117925",
+        "assigned_priority": "High",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "App crashing - But"
+            },
+            {
+                "signal": "keyword",
+                "value": "crash"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "38"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to the dashboard not loading data, not a complete app crash.\n2. The inferred severity is supported by the lack of mention of critical data loss or system failure.\n3. The ticket is classified as False Alarm because the app is only experiencing a loading issue, not a crash.",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-117690",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "App crashing - Former"
+            },
+            {
+                "signal": "keyword",
+                "value": "crash,sync"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "2"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "9"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a specific app crashing, which might not directly affect the overall system functionality.\n2. The inferred severity is supported by the evidence of the app crashing, as this could potentially disrupt the user's workflow and productivity.\n3. The ticket is classified as False Alarm because the user mentions \"yard economy agree now long focus sport,\" which appears to be unrelated to the issue of the app crashing and syncing problems. This suggests that the user might",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-118455",
+        "assigned_priority": "Critical",
+        "inferred_severity": 1,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Data not syncing - Almost"
+            },
+            {
+                "signal": "keyword",
+                "value": "sync,data not syncing"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "6"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a data sync problem, which might be a recurring issue or a temporary glitch, not necessarily critical.\n2. The inferred severity is supported by the keyword \"Critical\" assigned to the ticket, but the description does not indicate a critical situation, suggesting a possible miscommunication or misunderstanding.\n3. The ticket is classified as False Alarm because the issue described (data not syncing) is a common problem that can be resolved without significant impact on the",
+        "confidence": 0.8
+    },
+    {
+        "ticket_id": "TKT-113474",
+        "assigned_priority": "High",
+        "inferred_severity": 0,
+        "mismatch_type": "False Alarm",
+        "severity_delta": -2,
+        "feature_evidence": [
+            {
+                "signal": "subject",
+                "value": "Login failed - Partner"
+            },
+            {
+                "signal": "keyword",
+                "value": "failed"
+            },
+            {
+                "signal": "llm_severity",
+                "value": "1"
+            },
+            {
+                "signal": "cluster_score",
+                "value": "0"
+            },
+            {
+                "signal": "resolution_time",
+                "value": "1"
+            }
+        ],
+        "constraint_analysis": "1. The assigned priority may not reflect the ticket urgency because the issue seems to be related to a specific user (Partner) and not a system-wide problem.\n2. The inferred severity is supported by the keyword \"failed\", which suggests a problem with the login process.\n3. The ticket is classified as False Alarm because the issue is likely a user-specific problem, not a system-wide outage, and the spinning wheel could be a loading indicator rather than an error message.",
+        "confidence": 0.8
+    }
+]
