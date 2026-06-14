@@ -27,7 +27,6 @@ import os
 import json
 import urllib.request
 import urllib.error
-from collections import Counter
 
 import numpy as np
 import pandas as pd
@@ -418,6 +417,21 @@ _VERDICT_COLORS = {
     "Consistent":    "#22c55e",
 }
 
+# The four pseudo-label signals the inferred severity is built from, with the
+# fusion weights used in train_pipeline.py stage_fusion():
+#     severity_fusion = 0.40*llm + 0.30*cluster + 0.20*resolution + 0.10*rule
+# The DistilBERT model is trained on labels derived from this blend, so these
+# weights are how much each signal contributes to the severity it infers. The
+# LLM and cluster signals run only at training time (to build the labels) and
+# are not recomputed per ticket at inference, so this panel reports the fusion
+# weights rather than per-ticket signal values.
+SIGNAL_WEIGHTS = {
+    "LLM severity score":       0.40,
+    "Embedding cluster score":  0.30,
+    "Resolution-time score":    0.20,
+    "Keyword rule score":       0.10,
+}
+
 
 def _dash_verdict_bar(df_r):
     """Mismatch type distribution bar chart."""
@@ -464,41 +478,45 @@ def _dash_confidence_hist(df_r):
     st.plotly_chart(fig, use_container_width=True)
 
 
-def _dash_top_signals(df_r):
-    """Horizontal bar chart of the top keyword signals in flagged tickets."""
-    mismatch_rows = df_r[df_r["prediction"] == "Mismatch"]
-    all_kw = []
-    if "keywords" in df_r.columns:
-        for kw_str in mismatch_rows["keywords"]:
-            if kw_str and str(kw_str).strip():
-                all_kw.extend([k.strip() for k in str(kw_str).split(",") if k.strip()])
+def _dash_signal_contributions(df_r):
+    """Horizontal bar chart of the four pseudo-label signals that drive the
+    inferred severity, sized by their fusion weight (llm 0.40, cluster 0.30,
+    resolution 0.20, rule 0.10).
 
-    if not all_kw:
-        st.info("No keyword signals have been captured in flagged tickets yet.")
-        return
-
-    top10 = Counter(all_kw).most_common(10)
-    kw_df = pd.DataFrame(top10, columns=["Signal", "Frequency"])
+    Replaces the old per-keyword chart: keywords are only the rule-score
+    component (10% of the blend), so a keyword frequency chart understated what
+    actually drives the model. The inferred severity is a weighted blend of all
+    four signals; this panel shows that blend."""
+    sig_df = pd.DataFrame(
+        {
+            "Signal": list(SIGNAL_WEIGHTS.keys()),
+            "Contribution": list(SIGNAL_WEIGHTS.values()),
+        }
+    )
+    sig_df["Label"] = sig_df["Contribution"].map(lambda v: f"{v * 100:.0f}%")
 
     if _PLOTLY:
         fig = px.bar(
-            kw_df, x="Frequency", y="Signal", orientation="h",
-            title="Top 10 Keywords in Flagged Tickets",
-            color="Frequency",
+            sig_df, x="Contribution", y="Signal", orientation="h",
+            title="Signal Contribution to Inferred Severity",
+            color="Contribution",
             color_continuous_scale="Reds",
-            text="Frequency",
+            text="Label",
         )
-        fig.update_traces(textposition="outside")
+        fig.update_traces(textposition="outside", cliponaxis=False)
         fig.update_layout(
-            yaxis=dict(autorange="reversed"),
             showlegend=False,
             height=360,
             coloraxis_showscale=False,
-            margin=dict(l=180, r=60, t=50, b=20),
+            xaxis=dict(range=[0, 0.5], tickformat=".0%",
+                       title="Weight in severity fusion"),
+            yaxis=dict(autorange="reversed", title=""),  # largest weight on top
+            margin=dict(l=200, r=60, t=50, b=40),
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.dataframe(kw_df, use_container_width=True)
+        show = sig_df[["Signal", "Label"]].rename(columns={"Label": "Contribution"})
+        st.dataframe(show, use_container_width=True, hide_index=True)
 
 
 def _dash_heatmap(df_r):
@@ -827,13 +845,17 @@ with tab_summary:
 
         st.divider()
 
-        # ── Row 2: Top contributing keyword signals ───────────────────────── #
+        # ── Row 2: Signal contributions to inferred severity ──────────────── #
         st.subheader("Top Contributing Signals")
         st.caption(
-            "Keyword signals extracted from tickets flagged as mismatches. "
-            "Bars show how often each signal appeared across all flagged tickets."
+            "The four signals the inferred severity is built from — LLM "
+            "severity, embedding-cluster score, resolution time, and the "
+            "keyword rule score — sized by their weight in the training fusion. "
+            "The LLM and cluster signals are computed during training to build "
+            "the severity labels; at inference the model reproduces that blend "
+            "rather than recomputing each signal per ticket."
         )
-        _dash_top_signals(df_r)
+        _dash_signal_contributions(df_r)
 
         st.divider()
 
