@@ -90,14 +90,16 @@ Cleaning operations applied:
 - `Ticket_Channel` → `channel_encoded` via `LabelEncoder` (fit on train only)
 - `Issue_Category` → `category_encoded` via `LabelEncoder` (fit on train only)
 - `Resolution_Time_Hours` → `resolution_time_norm` via `MinMaxScaler` (fit on train only)
+- `Priority_Level` → `priority_norm` via deterministic normalization (assigned priority / 3 → Low=0.00, Medium=0.33, High=0.67, Critical=1.00). Used as a model **feature**, available at inference time.
 
-**Train-Test Split:**
-An 80/20 stratified split was performed before any encoding or normalization to prevent data leakage. All scalers and encoders were fit exclusively on the training set and applied to the test set.
+**Train / Validation / Test Split:**
+A stratified split was performed before any encoding or normalization to prevent data leakage: 70% train, 15% validation, 15% test. The validation set is used for checkpoint selection (best validation macro-F1) and for tuning the decision threshold. All scalers and encoders were fit exclusively on the training set and applied to the validation and test sets.
 
 ```
 Total tickets: 20,000
-Train:         16,000
-Test:           4,000
+Train:         14,000
+Validation:     3,000
+Test:           3,000
 ```
 
 ---
@@ -246,9 +248,9 @@ DistilBERT (distilbert-base-uncased)
         ↓  LoRA adapters on q_lin + v_lin
 CLS Token Output  (768-dim)
         ↓
-        ├── Metadata Input [channel_encoded, category_encoded, resolution_time_norm]
+        ├── Metadata Input [channel_encoded, category_encoded, resolution_time_norm, priority_norm]
         │         ↓
-        │   Linear(3 → 32) + ReLU + Dropout
+        │   Linear(4 → 32) + ReLU + Dropout
         │         ↓
         └──────── Concat (768 + 32 = 800-dim)
                   ↓
@@ -258,6 +260,26 @@ CLS Token Output  (768-dim)
                   ↓
         Output: [Consistent, Mismatch]
 ```
+
+### Metadata Features
+
+The classifier consumes four structured metadata features alongside the text:
+
+| Feature | Source |
+|---|---|
+| `channel_encoded` | Ticket channel (`LabelEncoder`) |
+| `category_encoded` | Issue category (`LabelEncoder`) |
+| `resolution_time_norm` | Resolution hours (`MinMaxScaler`) |
+| `priority_norm` | Human-assigned priority, normalized to [0,1] (Low=0.00 → Critical=1.00) |
+
+The **assigned priority is included as a feature** because the mismatch target is defined *relative to* it: the same inferred severity is a mismatch under a low-priority ticket but consistent under a high-priority one. Without the priority, the classifier is judging a disagreement while only seeing one side of it, and identical-looking inputs carry opposite labels. Supplying the priority makes the two classes separable and is the primary driver of the final accuracy. The priority is available at prediction time (it is part of every ticket), so it introduces no train / inference skew.
+
+### Training Setup
+
+- **Loss:** weighted cross-entropy with **balanced class weights** (to address class imbalance), plus **label smoothing (0.05)** to reduce over-confident logits
+- **Optimizer / schedule:** AdamW with linear warmup, gradient clipping
+- **Epochs:** 8, retaining the checkpoint with the best **validation macro-F1** for final evaluation (guards against late-epoch over-fitting)
+- **Decision threshold:** tuned on the validation set rather than fixed at 0.5 — the threshold that clears all four verification gates with the highest accuracy is selected, saved to `threshold.json`, and applied at inference
 
 ---
 
@@ -331,26 +353,54 @@ The LLM score consistently identifies semantically urgent tickets regardless of 
 
 ### Final Test Set Performance
 
+The decision threshold was tuned on the validation set: **0.62** was selected as the operating point that clears all four verification gates with the highest accuracy (validation accuracy 0.9630), and is applied at inference.
+
 | Metric | Value |
 |---|---|
-| Test Loss | 0.5297 |
-| **Accuracy** | **0.7040** |
-| **Macro F1** | **0.6830** |
-| Recall — Consistent (0) | 0.6627 |
-| Recall — Mismatch (1) | 0.8131 |
+| Test Loss | 0.2755 |
+| **Accuracy** | **0.9533** |
+| **Macro F1** | **0.9402** |
+| Recall — Consistent (0) | 0.9798 |
+| Recall — Mismatch (1) | 0.8835 |
+
+### Verification Criteria
+
+All four required thresholds are met on the held-out test split:
+
+| Metric | Required | Achieved | Status |
+|---|---|---|---|
+| Binary Classification Accuracy | ≥ 0.83 | 0.9533 | PASS |
+| Macro F1 Score | ≥ 0.82 | 0.9402 | PASS |
+| Per-Class Recall — Consistent (0) | ≥ 0.78 | 0.9798 | PASS |
+| Per-Class Recall — Mismatch (1) | ≥ 0.78 | 0.8835 | PASS |
 
 ### Classification Report
 
 ```
                    precision    recall  f1-score   support
 
-   Consistent (0)     0.9035    0.6627    0.7646      2176
-     Mismatch (1)     0.4772    0.8131    0.6014       824
+   Consistent (0)     0.9569    0.9798    0.9682      2176
+     Mismatch (1)     0.9430    0.8835    0.9123       824
 
-         accuracy                         0.7040      3000
-        macro avg     0.6904    0.7379    0.6830      3000
-     weighted avg     0.7864    0.7040    0.7198      3000
+         accuracy                         0.9533      3000
+        macro avg     0.9500    0.9316    0.9402      3000
+     weighted avg     0.9531    0.9533    0.9528      3000
 ```
+
+### Training Progression
+
+| Epoch | Train Loss | Train Acc | Train Macro F1 | Val Loss | Val Acc | Val Macro F1 |
+|---|---|---|---|---|---|---|
+| 1 | 0.6288 | 0.6361 | 0.6159 | 0.5616 | 0.7183 | 0.6901 |
+| 2 | 0.5454 | 0.7039 | 0.6840 | 0.4832 | 0.7373 | 0.7173 |
+| 3 | 0.4624 | 0.7896 | 0.7660 | 0.3708 | 0.8650 | 0.8441 |
+| 4 | 0.3808 | 0.8739 | 0.8518 | 0.3024 | 0.9440 | 0.9321 |
+| 5 | 0.3369 | 0.9036 | 0.8846 | 0.2722 | 0.9490 | 0.9376 |
+| 6 | 0.3128 | 0.9212 | 0.9044 | 0.2597 | 0.9523 | 0.9410 |
+| 7 | 0.2978 | 0.9286 | 0.9127 | 0.2537 | 0.9503 | 0.9387 |
+| 8 | 0.2937 | 0.9275 | 0.9118 | 0.2510 | 0.9487 | 0.9368 |
+
+The checkpoint with the best validation macro-F1 (epoch 6) is restored for final test evaluation.
 
 ---
 
@@ -365,5 +415,3 @@ The LLM score consistently identifies semantically urgent tickets regardless of 
 ├── requirements.txt            # Pinned dependencies
 └── README.md                   # This file
 ```
-
-
