@@ -15,12 +15,17 @@ trained model.pt always loads back into an identical graph. app.py imports
 the TicketPredictor class from here so the deployed UI and the CLI share one
 inference path.
 
+Metadata features (4): channel, category, resolution_time_norm, priority_norm.
+The assigned priority is included because the mismatch label is defined relative
+to it; it is supplied per ticket at inference, so there is no train/serve skew.
+
 Saved artifacts expected under --model-dir (default: saved_model/):
     model.pt                     -> torch state_dict of the full model
     tokenizer/                   -> distilbert tokenizer files
     channel_encoder.pkl          -> sklearn LabelEncoder (Ticket_Channel)
     category_encoder.pkl         -> sklearn LabelEncoder (Issue_Category)
     resolution_scaler.pkl        -> sklearn MinMaxScaler (Resolution_Time_Hours)
+    threshold.json   (optional)  -> validation-tuned decision threshold
     encoder_config/  (optional)  -> distilbert config for fully offline load
 
 CLI:
@@ -49,7 +54,7 @@ warnings.filterwarnings("ignore")
 # --------------------------------------------------------------------------- #
 MODEL_NAME = "distilbert-base-uncased"
 MAX_LEN = 128
-N_METADATA = 3
+N_METADATA = 4  # CHANGED: 3 -> 4 (added normalized assigned priority)
 N_CLASSES = 2
 
 # LoRA hyper-parameters used when the model was trained.
@@ -201,8 +206,9 @@ class DistilBERTLoRAWithMetadata(nn.Module):
     """DistilBERT encoder (LoRA-adapted) fused with a small metadata MLP.
 
     forward inputs:
-        input_ids, attention_mask : tokenized clean_text
-        channel, category, res_time : float metadata, stacked to (batch, 3)
+        input_ids, attention_mask        : tokenized clean_text
+        channel, category, res_time,
+        priority                          : float metadata, stacked to (batch, 4)
     """
 
     def __init__(
@@ -245,11 +251,13 @@ class DistilBERTLoRAWithMetadata(nn.Module):
             nn.Linear(256, n_classes),
         )
 
-    def forward(self, input_ids, attention_mask, channel, category, res_time):
+    # CHANGED: forward now accepts the priority metadata feature
+    def forward(self, input_ids, attention_mask, channel, category, res_time, priority):
         outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
         cls_output = outputs.last_hidden_state[:, 0, :]
 
-        meta = torch.stack([channel, category, res_time], dim=1)
+        # CHANGED: stack 4 metadata features (priority added)
+        meta = torch.stack([channel, category, res_time, priority], dim=1)
         meta_out = self.meta_proj(meta)
 
         combined = torch.cat([cls_output, meta_out], dim=1)
@@ -349,6 +357,7 @@ class TicketPredictor:
         self.device = torch.device(
             device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
         )
+        self.default_threshold = 0.5  # CHANGED: may be overridden by threshold.json
         self._load()
 
     def _load(self):
@@ -397,15 +406,26 @@ class TicketPredictor:
                 f"Missing critical keys: {critical_missing[:6]} ..."
             )
 
+        # CHANGED: load the validation-tuned decision threshold if present.
+        # Absent file -> keep 0.5, so nothing breaks on an older artifact set.
+        thr_path = os.path.join(self.model_dir, "threshold.json")
+        if os.path.isfile(thr_path):
+            try:
+                with open(thr_path) as f:
+                    self.default_threshold = float(json.load(f).get("threshold", 0.5))
+            except Exception:
+                self.default_threshold = 0.5
+
         self.model.to(self.device)
         self.model.eval()
 
-    def predict(self, ticket, threshold=0.5):
+    def predict(self, ticket, threshold=None):
         """Score one ticket.
 
         ticket: dict with keys
             subject, description, channel, category,
             resolution_hours, priority
+        threshold: if None, uses the saved/tuned default_threshold.
         Returns a structured result dict.
         """
         subject = ticket.get("subject", "")
@@ -419,6 +439,9 @@ class TicketPredictor:
             resolution_hours = float(resolution_hours)
         except (TypeError, ValueError):
             resolution_hours = 0.0
+
+        # CHANGED: resolve the threshold (explicit arg wins, else tuned default)
+        thr = self.default_threshold if threshold is None else threshold
 
         clean_text = build_clean_text(subject, description)
 
@@ -437,13 +460,17 @@ class TicketPredictor:
         channel_code = float(safe_encode(self.channel_encoder, channel))
         category_code = float(safe_encode(self.category_encoder, category))
         res_norm = float(self.resolution_scaler.transform([[resolution_hours]])[0][0])
+        # CHANGED: normalized assigned priority, matching training (priority_num / 3.0)
+        priority_norm = PRIORITY_MAP.get(str(priority), 0) / 3.0
 
         channel_t = torch.tensor([channel_code], dtype=torch.float, device=self.device)
         category_t = torch.tensor([category_code], dtype=torch.float, device=self.device)
         res_t = torch.tensor([res_norm], dtype=torch.float, device=self.device)
+        priority_t = torch.tensor([priority_norm], dtype=torch.float, device=self.device)  # CHANGED
 
         with torch.no_grad():
-            logits = self.model(input_ids, attention_mask, channel_t, category_t, res_t)
+            # CHANGED: pass the priority feature to the model
+            logits = self.model(input_ids, attention_mask, channel_t, category_t, res_t, priority_t)
             probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
 
         mismatch_prob = float(probs[1])
@@ -454,7 +481,7 @@ class TicketPredictor:
         rule_sev, evidence = rule_score(clean_text)
 
         verdict, delta, model_flag, final_mismatch = classify_verdict(
-            mismatch_prob, rule_sev, assigned_num, res_norm, threshold=threshold
+            mismatch_prob, rule_sev, assigned_num, res_norm, threshold=thr
         )
 
         model_conf = mismatch_prob if final_mismatch else consistent_prob
@@ -513,7 +540,8 @@ def _parse_args():
         choices=list(PRIORITY_MAP.keys()),
         help="Human-assigned priority.",
     )
-    p.add_argument("--threshold", type=float, default=0.5, help="Mismatch probability threshold.")
+    # CHANGED: default None -> uses the tuned threshold saved in threshold.json
+    p.add_argument("--threshold", type=float, default=None, help="Mismatch probability threshold.")
     return p.parse_args()
 
 

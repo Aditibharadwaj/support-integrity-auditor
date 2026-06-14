@@ -12,6 +12,7 @@ that predict.py / app.py load at inference time:
     saved_model/category_encoder.pkl
     saved_model/resolution_scaler.pkl
     saved_model/encoder_config/        (for fully offline inference)
+    saved_model/threshold.json         (validation-tuned decision threshold)
     saved_model/results.csv
     saved_model/training_history.csv
 
@@ -28,10 +29,14 @@ pipeline still runs end to end on CPU/GPU by substituting a rule-based proxy for
 the LLM severity signal (a clear warning is printed). The trained DistilBERT
 model and the deployable app do NOT need Mistral.
 
+Metadata features (4): channel, category, resolution_time_norm, priority_norm.
+The assigned priority is a feature because the mismatch label is defined relative
+to it; it is available at inference, so there is no train/serve skew.
+
 Usage:
     python train_pipeline.py --data customer_support_tickets.csv
     python train_pipeline.py --data customer_support_tickets.csv --use-llm
-    python train_pipeline.py --data customer_support_tickets.csv --force --epochs 5
+    python train_pipeline.py --data customer_support_tickets.csv --force --epochs 8
 """
 
 import os
@@ -331,6 +336,10 @@ def stage_fusion(features, llm, out_path, force=False):
     df.loc[df["severity_fusion"] >= 2.25, "inferred_severity"] = 3
 
     df["assigned_priority_num"] = df["Priority_Level"].map(PRIORITY_MAP)
+    # CHANGED: normalized assigned priority feature (Low=0.00 .. Critical=1.00).
+    # Carried into the splits so the classifier can see the priority the mismatch
+    # label is defined against.
+    df["priority_norm"] = df["assigned_priority_num"] / 3.0
     df["severity_delta"] = df["inferred_severity"] - df["assigned_priority_num"]
     df["mismatch"] = (df["severity_delta"].abs() >= 2).astype(int)
 
@@ -407,6 +416,12 @@ def _fit_and_save_encoders(train_df, val_df, test_df, out_dir):
     val_df["resolution_time_norm"] = scaler.transform(val_df[["Resolution_Time_Hours"]])
     test_df["resolution_time_norm"] = scaler.transform(test_df[["Resolution_Time_Hours"]])
 
+    # CHANGED: ensure the normalized priority feature exists on each split
+    # (derive it if an older cached split lacks the column).
+    for part in (train_df, val_df, test_df):
+        if "priority_norm" not in part.columns:
+            part["priority_norm"] = part["assigned_priority_num"].astype(float) / 3.0
+
     le_channel = LabelEncoder()
     train_df["channel_encoded"] = le_channel.fit_transform(train_df["Ticket_Channel"].astype(str))
     val_df["channel_encoded"] = _safe_transform(le_channel, val_df["Ticket_Channel"])
@@ -443,6 +458,12 @@ class TicketDataset(Dataset):
         self.channels = df["channel_encoded"].tolist()
         self.categories = df["category_encoded"].tolist()
         self.res_times = df["resolution_time_norm"].tolist()
+        # CHANGED: normalized assigned priority feature (fallback derives it if the
+        # column is absent, e.g. from an older cached split CSV).
+        if "priority_norm" in df.columns:
+            self.priorities = df["priority_norm"].tolist()
+        else:
+            self.priorities = (df["assigned_priority_num"].astype(float) / 3.0).tolist()
         self.tokenizer = tokenizer
         self.max_len = max_len
 
@@ -463,6 +484,8 @@ class TicketDataset(Dataset):
             "channel": torch.tensor(self.channels[idx], dtype=torch.float),
             "category": torch.tensor(self.categories[idx], dtype=torch.float),
             "res_time": torch.tensor(self.res_times[idx], dtype=torch.float),
+            # CHANGED: normalized assigned priority (4th metadata feature)
+            "priority": torch.tensor(self.priorities[idx], dtype=torch.float),
             "label": torch.tensor(self.labels[idx], dtype=torch.long),
         }
 
@@ -475,6 +498,7 @@ def _run_epoch(model, loader, criterion, device, optimizer=None, scheduler=None)
 
     total_loss = 0.0
     all_preds, all_labels = [], []
+    all_probs = []  # CHANGED: positive-class probabilities for threshold tuning
 
     context = torch.enable_grad() if is_train else torch.no_grad()
     with context:
@@ -484,12 +508,14 @@ def _run_epoch(model, loader, criterion, device, optimizer=None, scheduler=None)
             channel = batch["channel"].to(device)
             category = batch["category"].to(device)
             res_time = batch["res_time"].to(device)
+            priority = batch["priority"].to(device)  # CHANGED: pull priority feature
             labels = batch["label"].to(device)
 
             if is_train:
                 optimizer.zero_grad()
 
-            logits = model(input_ids, attention_mask, channel, category, res_time)
+            # CHANGED: pass priority to the model
+            logits = model(input_ids, attention_mask, channel, category, res_time, priority)
             loss = criterion(logits, labels)
 
             if is_train:
@@ -500,6 +526,7 @@ def _run_epoch(model, loader, criterion, device, optimizer=None, scheduler=None)
 
             total_loss += loss.item()
             all_preds.extend(torch.argmax(logits, dim=1).cpu().numpy())
+            all_probs.extend(torch.softmax(logits, dim=1)[:, 1].cpu().numpy())  # CHANGED
             all_labels.extend(labels.cpu().numpy())
 
     return (
@@ -508,13 +535,59 @@ def _run_epoch(model, loader, criterion, device, optimizer=None, scheduler=None)
         f1_score(all_labels, all_preds, average="macro"),
         all_preds,
         all_labels,
+        all_probs,  # CHANGED: extra return value
     )
 
 
-def stage_train(train_df, val_df, test_df, out_dir, epochs=5, batch_size=32, lr=2e-4):
+def _tune_threshold(val_probs, val_labels):
+    """CHANGED: pick the validation threshold that clears all four verification
+    gates (accuracy >= 0.83, macro-F1 >= 0.82, both recalls >= 0.78) with the
+    HIGHEST accuracy; fall back to the macro-F1-optimal point if none clear them."""
+    from sklearn.metrics import accuracy_score, f1_score, recall_score
+
+    val_probs = np.asarray(val_probs)
+    val_labels = np.asarray(val_labels)
+
+    acc_gate, f1_gate, rec_gate = 0.83, 0.82, 0.78
+    best_threshold = 0.5
+    best_passing_acc = -1.0
+    best_macro = -1.0
+    best_macro_threshold = 0.5
+
+    for t in np.round(np.arange(0.05, 0.96, 0.01), 2):
+        preds_t = (val_probs >= t).astype(int)
+        acc_t = accuracy_score(val_labels, preds_t)
+        f1_t = f1_score(val_labels, preds_t, average="macro")
+        rec_t = recall_score(val_labels, preds_t, average=None, zero_division=0)
+        r0, r1 = (rec_t[0], rec_t[1]) if len(rec_t) == 2 else (0.0, 0.0)
+
+        if f1_t > best_macro:
+            best_macro = f1_t
+            best_macro_threshold = float(t)
+
+        if acc_t >= acc_gate and f1_t >= f1_gate and r0 >= rec_gate and r1 >= rec_gate:
+            if acc_t > best_passing_acc:
+                best_passing_acc = acc_t
+                best_threshold = float(t)
+
+    if best_passing_acc < 0:
+        print(
+            "[stage 5] No validation threshold cleared all four gates; "
+            f"using macro-F1-optimal threshold {best_macro_threshold:.2f}."
+        )
+        return best_macro_threshold
+    print(
+        f"[stage 5] Tuned threshold (all gates pass, max accuracy): "
+        f"{best_threshold:.2f} (val accuracy {best_passing_acc:.4f})"
+    )
+    return best_threshold
+
+
+def stage_train(train_df, val_df, test_df, out_dir, epochs=8, batch_size=32, lr=2e-4):
+    import copy  # CHANGED: snapshot best-validation weights
     from transformers import AutoTokenizer, AutoConfig, get_linear_schedule_with_warmup
     from sklearn.utils.class_weight import compute_class_weight
-    from sklearn.metrics import classification_report, recall_score
+    from sklearn.metrics import classification_report, recall_score, accuracy_score, f1_score
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[stage 5] Device: {device}")
@@ -544,7 +617,8 @@ def stage_train(train_df, val_df, test_df, out_dir, epochs=5, batch_size=32, lr=
         base_config=base_config,
     ).to(device)
 
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    # CHANGED: gentle label smoothing on top of the balanced class weights
+    criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.05)
     optimizer = torch.optim.AdamW(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=lr,
@@ -557,13 +631,24 @@ def stage_train(train_df, val_df, test_df, out_dir, epochs=5, batch_size=32, lr=
         num_training_steps=total_steps,
     )
 
+    # CHANGED: keep the best-by-validation-macro-F1 checkpoint
+    best_val_f1 = -1.0
+    best_state = None
+
     history = []
     for epoch in range(1, epochs + 1):
         print(f"\n{'=' * 50}\nEPOCH {epoch}/{epochs}\n{'=' * 50}")
-        train_loss, train_acc, train_f1, _, _ = _run_epoch(
+        train_loss, train_acc, train_f1, _, _, _ = _run_epoch(
             model, train_loader, criterion, device, optimizer, scheduler
         )
-        val_loss, val_acc, val_f1, _, _ = _run_epoch(model, val_loader, criterion, device)
+        val_loss, val_acc, val_f1, _, _, _ = _run_epoch(model, val_loader, criterion, device)
+
+        # CHANGED: snapshot weights whenever validation macro-F1 improves
+        if val_f1 > best_val_f1:
+            best_val_f1 = val_f1
+            best_state = copy.deepcopy(model.state_dict())
+            print(f"  new best val Macro F1: {best_val_f1:.4f} (checkpoint kept)")
+
         history.append(
             {
                 "epoch": epoch,
@@ -578,10 +663,23 @@ def stage_train(train_df, val_df, test_df, out_dir, epochs=5, batch_size=32, lr=
         print(f"Train -> Loss {train_loss:.4f} | Acc {train_acc:.4f} | Macro F1 {train_f1:.4f}")
         print(f"Val   -> Loss {val_loss:.4f} | Acc {val_acc:.4f} | Macro F1 {val_f1:.4f}")
 
+    # CHANGED: restore the best-by-validation weights before tuning / test / saving
+    if best_state is not None:
+        model.load_state_dict(best_state)
+        print(f"\n[stage 5] Restored best checkpoint (val Macro F1 = {best_val_f1:.4f})")
+
+    # CHANGED: tune the decision threshold on validation, then apply to test
+    _, _, _, _, val_labels, val_probs = _run_epoch(model, val_loader, criterion, device)
+    best_threshold = _tune_threshold(val_probs, val_labels)
+
     print("\n=== FINAL TEST EVALUATION ===")
-    test_loss, test_acc, test_f1, test_preds, test_labels = _run_epoch(
-        model, test_loader, criterion, device
-    )
+    test_loss, _, _, _, test_labels, test_probs = _run_epoch(model, test_loader, criterion, device)
+    test_labels = np.asarray(test_labels)
+    test_probs = np.asarray(test_probs)
+    test_preds = (test_probs >= best_threshold).astype(int)  # CHANGED: thresholded preds
+
+    test_acc = accuracy_score(test_labels, test_preds)
+    test_f1 = f1_score(test_labels, test_preds, average="macro")
     print(f"Test Loss: {test_loss:.4f}")
     print(f"Test Accuracy: {test_acc:.4f}")
     print(f"Test Macro F1: {test_f1:.4f}")
@@ -610,11 +708,12 @@ def stage_train(train_df, val_df, test_df, out_dir, epochs=5, batch_size=32, lr=
     )
     history_df = pd.DataFrame(history)
 
-    _save_artifacts(model, tokenizer, base_config, results_df, history_df, out_dir)
+    # CHANGED: pass the tuned threshold so it is persisted for inference
+    _save_artifacts(model, tokenizer, base_config, results_df, history_df, out_dir, best_threshold)
     return model, results_df, history_df
 
 
-def _save_artifacts(model, tokenizer, base_config, results_df, history_df, out_dir):
+def _save_artifacts(model, tokenizer, base_config, results_df, history_df, out_dir, threshold=0.5):
     os.makedirs(out_dir, exist_ok=True)
 
     torch.save(model.state_dict(), os.path.join(out_dir, "model.pt"))
@@ -627,12 +726,17 @@ def _save_artifacts(model, tokenizer, base_config, results_df, history_df, out_d
     results_df.to_csv(os.path.join(out_dir, "results.csv"), index=False)
     history_df.to_csv(os.path.join(out_dir, "training_history.csv"), index=False)
 
+    # CHANGED: persist the validation-tuned decision threshold for predict.py
+    with open(os.path.join(out_dir, "threshold.json"), "w") as f:
+        json.dump({"threshold": float(threshold)}, f)
+
     print("\nTraining Complete")
     print(f"Model + artifacts saved to {out_dir}/")
     print("  - model.pt")
     print("  - tokenizer/")
     print("  - encoder_config/")
     print("  - channel_encoder.pkl, category_encoder.pkl, resolution_scaler.pkl")
+    print("  - threshold.json")
     print("  - results.csv, training_history.csv")
 
 
@@ -738,7 +842,7 @@ def _parse_args():
     p = argparse.ArgumentParser(description="Train the ticket severity mismatch detector.")
     p.add_argument("--data", default="customer_support_tickets.csv", help="Input CSV path.")
     p.add_argument("--out-dir", default="saved_model", help="Where to save artifacts.")
-    p.add_argument("--epochs", type=int, default=5)
+    p.add_argument("--epochs", type=int, default=8)  # CHANGED: 5 -> 8 (matches notebook)
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--use-llm", action="store_true", help="Use Mistral 7B for severity scoring.")
