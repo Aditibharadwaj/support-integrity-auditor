@@ -11,3 +11,8 @@ peft==0.13.2
 accelerate>=1.1.1
 sentencepiece>=0.2.0
 protobuf<5
+
+plotly>=5.18.0
+
+huggingface_hub>=0.23.0
+sentence-transformers>=2.7.0
