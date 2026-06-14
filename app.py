@@ -3,10 +3,13 @@
 Three ways to use it:
   1. Single ticket  - fill a short form, get one verdict
   2. Batch CSV      - upload a tickets CSV, score every row
-  3. Summary        - counts and a chart over everything scored this session
+  3. Dashboard      - Priority Mismatch Dashboard with distribution of flagged
+                      tickets, mismatch types, top contributing signals, and a
+                      severity delta heatmap across ticket categories and channels.
 
-Every analysis produces five fields:
-  Ticket_ID, prediction, confidence, mismatch_type, dossier_json
+Every analysis now produces nine fields:
+  Ticket_ID, prediction, confidence, mismatch_type, dossier_json,
+  category, channel, severity_delta, keywords
 
 This file only READS from predict.py (TicketPredictor + PRIORITY_MAP).
 It does not import or run train_pipeline.py.
@@ -24,15 +27,30 @@ import os
 import json
 import urllib.request
 import urllib.error
+from collections import Counter
 
+import numpy as np
 import pandas as pd
 import streamlit as st
+
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    _PLOTLY = True
+except ImportError:
+    _PLOTLY = False
 
 from predict import TicketPredictor, PRIORITY_MAP, PRIORITY_INVERSE
 
 MODEL_DIR = os.environ.get("MODEL_DIR", "saved_model")
 HF_REPO = os.environ.get("HF_REPO", "aditibharadwaj/support-integrity-auditor")
-OUTPUT_COLS = ["Ticket_ID", "prediction", "confidence", "mismatch_type", "dossier_json"]
+
+# Nine output fields — category, channel, severity_delta, keywords added for
+# the Dashboard heatmap and signals chart.
+OUTPUT_COLS = [
+    "Ticket_ID", "prediction", "confidence", "mismatch_type", "dossier_json",
+    "category", "channel", "severity_delta", "keywords",
+]
 
 # Generative dossier configuration (all overridable by env var / Streamlit Secrets).
 #   DOSSIER_BACKEND: mistral_api | local_mistral | template
@@ -82,6 +100,7 @@ st.markdown(
       h1 {font-weight: 700; letter-spacing: -0.5px;}
       .stTabs [data-baseweb="tab"] {font-size: 0.95rem;}
       .legend {color: #8b949e; font-size: 0.85rem; line-height: 1.6;}
+      .heatmap-legend {font-size: 0.82rem; color: #6b7280; line-height: 1.8;}
     </style>
     """,
     unsafe_allow_html=True,
@@ -224,35 +243,50 @@ def build_dossier_schema(ticket_id, result):
 
 
 def result_to_row(ticket_id, result):
-    """Collapse a predictor result into the five output fields."""
+    """Collapse a predictor result into the nine output fields.
+
+    The four new fields — category, channel, severity_delta, keywords — feed
+    the Dashboard tab's heatmap and top-signals chart.
+    """
     schema = build_dossier_schema(ticket_id, result)
+    evidence = result["rule"]["evidence"]
     return {
         "Ticket_ID": ticket_id,
         "prediction": "Mismatch" if result["is_mismatch"] else "Consistent",
         "confidence": round(float(result["model"]["confidence"]), 4),
         "mismatch_type": result["verdict"],
         "dossier_json": json.dumps(schema, ensure_ascii=False),
+        # --- new fields ---
+        "category": result["input"].get("category", ""),
+        "channel": result["input"].get("channel", ""),
+        "severity_delta": int(result["rule"]["severity_delta"]),
+        "keywords": ", ".join(evidence) if evidence else "",
     }
 
 
 def store_rows(rows):
-    """Append rows to the session-wide results table (drives the Summary tab)."""
+    """Append rows to the session-wide results table (drives the Dashboard tab)."""
     new = pd.DataFrame(rows, columns=OUTPUT_COLS)
     if "results" not in st.session_state:
         st.session_state["results"] = new
     else:
+        existing = st.session_state["results"]
+        # Fill any missing columns that older rows may not have
+        for col in OUTPUT_COLS:
+            if col not in existing.columns:
+                existing[col] = ""
         st.session_state["results"] = pd.concat(
-            [st.session_state["results"], new], ignore_index=True
+            [existing, new], ignore_index=True
         )
 
 
 def verdict_banner(verdict):
     if verdict == "Hidden Crisis":
-        st.error("Hidden Crisis - ticket looks under-prioritized.")
+        st.error("🔴 Hidden Crisis — ticket looks under-prioritized.")
     elif verdict == "False Alarm":
-        st.warning("False Alarm - ticket looks over-prioritized.")
+        st.warning("🟡 False Alarm — ticket looks over-prioritized.")
     else:
-        st.success("Consistent - assigned priority matches the content.")
+        st.success("✅ Consistent — assigned priority matches the content.")
 
 
 def find_col(df, candidates):
@@ -376,6 +410,205 @@ def attach_analysis(result, backend):
 
 
 # --------------------------------------------------------------------------- #
+# Dashboard helpers
+# --------------------------------------------------------------------------- #
+_VERDICT_COLORS = {
+    "Hidden Crisis": "#ef4444",
+    "False Alarm":   "#f59e0b",
+    "Consistent":    "#22c55e",
+}
+
+
+def _dash_verdict_bar(df_r):
+    """Mismatch type distribution bar chart."""
+    counts = (
+        df_r["mismatch_type"]
+        .value_counts()
+        .reindex(["Hidden Crisis", "False Alarm", "Consistent"])
+        .fillna(0)
+        .reset_index()
+    )
+    counts.columns = ["Verdict", "Count"]
+    if _PLOTLY:
+        fig = px.bar(
+            counts, x="Verdict", y="Count",
+            color="Verdict",
+            color_discrete_map=_VERDICT_COLORS,
+            title="Verdict Distribution",
+            text="Count",
+        )
+        fig.update_traces(textposition="outside")
+        fig.update_layout(showlegend=False, height=320,
+                          margin=dict(t=50, b=20), yaxis_title="Tickets")
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.bar_chart(counts.set_index("Verdict"))
+
+
+def _dash_confidence_hist(df_r):
+    """Confidence score histogram coloured by verdict."""
+    if not _PLOTLY:
+        st.caption("Install plotly for the confidence histogram.")
+        return
+    fig = px.histogram(
+        df_r, x="confidence", nbins=20,
+        color="mismatch_type",
+        color_discrete_map=_VERDICT_COLORS,
+        title="Confidence Score Distribution",
+        labels={"confidence": "Model Confidence", "mismatch_type": "Verdict"},
+        barmode="overlay",
+    )
+    fig.update_layout(height=320, bargap=0.05,
+                      margin=dict(t=50, b=20),
+                      legend_title_text="Verdict")
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _dash_top_signals(df_r):
+    """Horizontal bar chart of the top keyword signals in flagged tickets."""
+    mismatch_rows = df_r[df_r["prediction"] == "Mismatch"]
+    all_kw = []
+    if "keywords" in df_r.columns:
+        for kw_str in mismatch_rows["keywords"]:
+            if kw_str and str(kw_str).strip():
+                all_kw.extend([k.strip() for k in str(kw_str).split(",") if k.strip()])
+
+    if not all_kw:
+        st.info("No keyword signals have been captured in flagged tickets yet.")
+        return
+
+    top10 = Counter(all_kw).most_common(10)
+    kw_df = pd.DataFrame(top10, columns=["Signal", "Frequency"])
+
+    if _PLOTLY:
+        fig = px.bar(
+            kw_df, x="Frequency", y="Signal", orientation="h",
+            title="Top 10 Keywords in Flagged Tickets",
+            color="Frequency",
+            color_continuous_scale="Reds",
+            text="Frequency",
+        )
+        fig.update_traces(textposition="outside")
+        fig.update_layout(
+            yaxis=dict(autorange="reversed"),
+            showlegend=False,
+            height=360,
+            coloraxis_showscale=False,
+            margin=dict(l=180, r=60, t=50, b=20),
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.dataframe(kw_df, use_container_width=True)
+
+
+def _dash_heatmap(df_r):
+    """Severity delta heatmap: category (rows) × channel (cols), avg delta as
+    the cell value and colour. Positive = under-prioritised (red), negative =
+    over-prioritised (blue)."""
+    has_cat   = "category"       in df_r.columns and df_r["category"].str.strip().ne("").any()
+    has_ch    = "channel"        in df_r.columns and df_r["channel"].str.strip().ne("").any()
+    has_delta = "severity_delta" in df_r.columns
+
+    if not (has_cat and has_ch and has_delta):
+        st.info(
+            "Category and channel columns are required for the heatmap. "
+            "Score a batch CSV that includes those columns, or submit single "
+            "tickets with category / channel filled in."
+        )
+        return
+
+    if not _PLOTLY:
+        st.info("Install plotly (`pip install plotly`) to render the heatmap.")
+        return
+
+    hm = df_r[
+        df_r["category"].str.strip().ne("") & df_r["channel"].str.strip().ne("")
+    ].copy()
+    hm["severity_delta"] = pd.to_numeric(hm["severity_delta"], errors="coerce")
+    hm = hm.dropna(subset=["severity_delta"])
+
+    if hm.empty:
+        st.info("No tickets with both category and channel data available yet.")
+        return
+
+    pivot_avg = (
+        hm.groupby(["category", "channel"])["severity_delta"]
+        .mean()
+        .round(2)
+        .unstack()
+    )
+    pivot_cnt = (
+        hm.groupby(["category", "channel"])["severity_delta"]
+        .count()
+        .unstack()
+        .reindex(index=pivot_avg.index, columns=pivot_avg.columns)
+        .fillna(0)
+        .astype(int)
+    )
+
+    if pivot_avg.shape[0] < 1 or pivot_avg.shape[1] < 1:
+        st.info("Not enough category/channel combinations to build the heatmap yet.")
+        return
+
+    # Build annotation text: "avg_delta\n(n=count)"
+    text_vals = []
+    for i in range(pivot_avg.shape[0]):
+        row_t = []
+        for j in range(pivot_avg.shape[1]):
+            v = pivot_avg.iloc[i, j]
+            c = pivot_cnt.iloc[i, j]
+            row_t.append(f"{v:.1f}<br>(n={c})" if not np.isnan(v) else "")
+        text_vals.append(row_t)
+
+    fig = go.Figure(data=go.Heatmap(
+        z=pivot_avg.values,
+        x=[str(c) for c in pivot_avg.columns],
+        y=[str(r) for r in pivot_avg.index],
+        colorscale="RdBu_r",
+        zmid=0,
+        zmin=-3,
+        zmax=3,
+        text=text_vals,
+        texttemplate="%{text}",
+        hovertemplate=(
+            "Category: %{y}<br>"
+            "Channel: %{x}<br>"
+            "Avg Severity Delta: %{z:.2f}<extra></extra>"
+        ),
+        colorbar=dict(
+            title=dict(text="Avg<br>Delta", side="right"),
+            tickvals=[-3, -2, -1, 0, 1, 2, 3],
+            ticktext=["−3", "−2", "−1", "0", "+1", "+2", "+3"],
+            thickness=14,
+        ),
+    ))
+    fig.update_layout(
+        xaxis_title="Ticket Channel",
+        yaxis_title="Issue Category",
+        height=max(320, 56 * pivot_avg.shape[0] + 120),
+        margin=dict(l=200, r=80, t=20, b=80),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    col_l, col_m, col_r = st.columns(3)
+    col_l.markdown(
+        "<div class='heatmap-legend'>🔴 <b>Positive delta</b><br>"
+        "Inferred severity > assigned → Hidden Crisis (under-prioritised)</div>",
+        unsafe_allow_html=True,
+    )
+    col_m.markdown(
+        "<div class='heatmap-legend'>⬜ <b>Zero delta</b><br>"
+        "Inferred severity = assigned → Consistent</div>",
+        unsafe_allow_html=True,
+    )
+    col_r.markdown(
+        "<div class='heatmap-legend'>🔵 <b>Negative delta</b><br>"
+        "Inferred severity < assigned → False Alarm (over-prioritised)</div>",
+        unsafe_allow_html=True,
+    )
+
+
+# --------------------------------------------------------------------------- #
 # Header
 # --------------------------------------------------------------------------- #
 st.title("Ticket Priority Auditor")
@@ -412,7 +645,7 @@ with st.sidebar:
     else:
         st.caption("Deterministic template. No LLM, instant.")
 
-tab_single, tab_batch, tab_summary = st.tabs(["Single ticket", "Batch CSV", "Summary"])
+tab_single, tab_batch, tab_summary = st.tabs(["Single ticket", "Batch CSV", "Dashboard"])
 
 
 # --------------------------------------------------------------------------- #
@@ -496,13 +729,13 @@ with tab_batch:
     if uploaded is not None and st.button("Score CSV", type="primary"):
         df_in = pd.read_csv(uploaded)
 
-        col_id = find_col(df_in, ["Ticket_ID", "id"])
-        col_subject = find_col(df_in, ["Ticket_Subject", "subject"])
-        col_desc = find_col(df_in, ["Ticket_Description", "description"])
-        col_channel = find_col(df_in, ["Ticket_Channel", "channel"])
+        col_id       = find_col(df_in, ["Ticket_ID", "id"])
+        col_subject  = find_col(df_in, ["Ticket_Subject", "subject"])
+        col_desc     = find_col(df_in, ["Ticket_Description", "description"])
+        col_channel  = find_col(df_in, ["Ticket_Channel", "channel"])
         col_category = find_col(df_in, ["Issue_Category", "category", "Ticket_Type"])
         col_priority = find_col(df_in, ["Priority_Level", "Ticket_Priority", "priority", "Assigned_Priority"])
-        col_res = find_col(df_in, ["Resolution_Time_Hours", "Resolution_Hours", "resolution_hours"])
+        col_res      = find_col(df_in, ["Resolution_Time_Hours", "Resolution_Hours", "resolution_hours"])
 
         if col_subject is None and col_desc is None:
             st.error("No subject or description column found. Check the file headers.")
@@ -515,12 +748,12 @@ with tab_batch:
             for i, (_, r) in enumerate(df_use.iterrows()):
                 try:
                     ticket = {
-                        "subject": str(r[col_subject]) if col_subject else "",
-                        "description": str(r[col_desc]) if col_desc else "",
-                        "channel": str(r[col_channel]) if col_channel else "",
-                        "category": str(r[col_category]) if col_category else "",
-                        "resolution_hours": r[col_res] if col_res else 0.0,
-                        "priority": str(r[col_priority]) if col_priority else "Low",
+                        "subject":          str(r[col_subject])  if col_subject  else "",
+                        "description":      str(r[col_desc])     if col_desc     else "",
+                        "channel":          str(r[col_channel])  if col_channel  else "",
+                        "category":         str(r[col_category]) if col_category else "",
+                        "resolution_hours": r[col_res]           if col_res      else 0.0,
+                        "priority":         str(r[col_priority]) if col_priority else "Low",
                     }
                     result = predictor.predict(ticket)
                     result = reconcile_verdict(result)
@@ -550,44 +783,93 @@ with tab_batch:
 
 
 # --------------------------------------------------------------------------- #
-# Tab 3: summary over everything scored this session
+# Tab 3: Priority Mismatch Dashboard
 # --------------------------------------------------------------------------- #
 with tab_summary:
     results = st.session_state.get("results")
+
     if results is None or results.empty:
-        st.info("Score a ticket or a CSV first, then this tab fills in.")
+        st.info(
+            "Score a ticket or upload a CSV first — this Dashboard fills in "
+            "automatically once data are available."
+        )
     else:
-        total = len(results)
-        n_mismatch = int((results["prediction"] == "Mismatch").sum())
-        n_hidden = int((results["mismatch_type"] == "Hidden Crisis").sum())
-        n_false = int((results["mismatch_type"] == "False Alarm").sum())
-        n_consistent = int((results["mismatch_type"] == "Consistent").sum())
+        df_r = results.copy()
 
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Scored", total)
-        m2.metric("Mismatches", n_mismatch)
-        m3.metric("Hidden Crisis", n_hidden)
-        m4.metric("False Alarm", n_false)
+        # Ensure severity_delta is numeric (guard against older session rows)
+        if "severity_delta" in df_r.columns:
+            df_r["severity_delta"] = pd.to_numeric(df_r["severity_delta"], errors="coerce")
 
-        st.write("")
-        counts = (
-            results["mismatch_type"]
-            .value_counts()
-            .reindex(["Hidden Crisis", "False Alarm", "Consistent"])
-            .fillna(0)
+        total       = len(df_r)
+        n_mismatch  = int((df_r["prediction"] == "Mismatch").sum())
+        n_hidden    = int((df_r["mismatch_type"] == "Hidden Crisis").sum())
+        n_false     = int((df_r["mismatch_type"] == "False Alarm").sum())
+        n_consistent = int((df_r["mismatch_type"] == "Consistent").sum())
+        mismatch_pct = f"{n_mismatch / total * 100:.1f} %" if total > 0 else "—"
+
+        # ── Overview metrics ──────────────────────────────────────────────── #
+        m1, m2, m3, m4, m5 = st.columns(5)
+        m1.metric("Tickets Scored", total)
+        m2.metric("Mismatches",     n_mismatch,   delta=mismatch_pct, delta_color="inverse")
+        m3.metric("🔴 Hidden Crisis", n_hidden)
+        m4.metric("🟡 False Alarm",   n_false)
+        m5.metric("✅ Consistent",    n_consistent)
+
+        st.divider()
+
+        # ── Row 1: Verdict distribution + Confidence histogram ────────────── #
+        st.subheader("Priority Mismatch Distribution")
+        col_bar, col_hist = st.columns(2)
+        with col_bar:
+            _dash_verdict_bar(df_r)
+        with col_hist:
+            _dash_confidence_hist(df_r)
+
+        st.divider()
+
+        # ── Row 2: Top contributing keyword signals ───────────────────────── #
+        st.subheader("Top Contributing Signals")
+        st.caption(
+            "Keyword signals extracted from tickets flagged as mismatches. "
+            "Bars show how often each signal appeared across all flagged tickets."
         )
-        st.bar_chart(counts)
+        _dash_top_signals(df_r)
 
+        st.divider()
+
+        # ── Row 3: Severity delta heatmap ─────────────────────────────────── #
+        st.subheader("Severity Delta Heatmap — Category × Channel")
+        st.caption(
+            "Average (inferred severity − assigned priority) per cell. "
+            "Positive values (red) → tickets are likely under-prioritised. "
+            "Negative values (blue) → tickets are likely over-prioritised."
+        )
+        _dash_heatmap(df_r)
+
+        st.divider()
+
+        # ── Row 4: Scored tickets table ───────────────────────────────────── #
+        st.subheader("Scored Tickets")
         only_mismatch = st.checkbox("Show mismatches only", value=True)
-        view = results[results["prediction"] == "Mismatch"] if only_mismatch else results
-        st.dataframe(view, use_container_width=True, hide_index=True)
 
-        st.download_button(
-            "Download all results CSV",
-            results.to_csv(index=False).encode("utf-8"),
-            file_name="ticket_audit_session.csv",
-            mime="text/csv",
-        )
-        if st.button("Clear results"):
-            st.session_state.pop("results", None)
-            st.rerun()
+        # Show a curated column set; omit dossier_json (too wide for the table)
+        display_cols = [c for c in [
+            "Ticket_ID", "prediction", "confidence", "mismatch_type",
+            "severity_delta", "category", "channel",
+        ] if c in df_r.columns]
+
+        view = df_r[df_r["prediction"] == "Mismatch"] if only_mismatch else df_r
+        st.dataframe(view[display_cols], use_container_width=True, hide_index=True)
+
+        dl_col, clr_col = st.columns([3, 1])
+        with dl_col:
+            st.download_button(
+                "Download all results CSV",
+                df_r.to_csv(index=False).encode("utf-8"),
+                file_name="ticket_audit_session.csv",
+                mime="text/csv",
+            )
+        with clr_col:
+            if st.button("Clear results"):
+                st.session_state.pop("results", None)
+                st.rerun()
