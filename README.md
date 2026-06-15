@@ -220,13 +220,6 @@ inferred=0, assigned=1  →  False Alarm
 inferred=assigned       →  Consistent
 ```
 
-**Final pseudo-label distribution (train):**
-
-| Label | Count | % |
-|---|---|---|
-| Consistent (0) | ~7,600 | ~47.5% |
-| Mismatch (1) | ~8,400 | ~52.5% |
-
 ---
 
 ## 5. Classifier Training
